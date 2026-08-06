@@ -12,7 +12,7 @@ import { Stepthree } from "./features/Stepthree";
 import { Stepfour } from "./features/Stepfour";
 
 const getPageNumber = () => {
-  if (typeof window !== undefined) {
+  if (typeof window !== "undefined") {
     if (JSON.parse(localStorage.getItem("page", "step")) === 4) {
       return 1;
     } else {
