@@ -86,7 +86,7 @@ export const Stepone = (props) => {
   };
 
   return (
-    <div className="w-120 h-163.75 flex flex-col rounded-lg bg-white px-8 py-8 justify-between">
+    <div className="w-120 min-h-163.75 flex flex-col rounded-lg bg-white px-8 py-8 justify-between">
       <div className="w-104 h-96.25 flex flex-col gap-7">
         <div className="w-104 h-32.25 flex flex-col gap-2">
           <Pineconelogo />

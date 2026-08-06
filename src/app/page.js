@@ -10,8 +10,20 @@ import { Stepone } from "./features/Stepone";
 import { Steptwo } from "./features/Steptwo";
 import { Stepthree } from "./features/Stepthree";
 import { Stepfour } from "./features/Stepfour";
+
+const getPageNumber = () => {
+  if (typeof window !== "undefined") {
+    if (JSON.parse(localStorage.getItem("page", "step")) === 4) {
+      return 1;
+    } else {
+      return JSON.parse(localStorage.getItem("page", "step"));
+    }
+  } else {
+    return 1;
+  }
+};
 export default function Home() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(getPageNumber());
   const [date, setDate] = useState("text");
   const firstStep = step === 1;
   const secondStep = step === 2;
@@ -20,19 +32,21 @@ export default function Home() {
 
   function stepAdd() {
     setStep(step + 1);
+    JSON.stringify(localStorage.setItem("page", step + 1));
   }
-
   function stepBack() {
     setStep(step - 1);
+    JSON.stringify(localStorage.setItem("page", step - 1));
   }
-
   return (
     <div className="w-screen h-screen flex flex-col border-box items-center justify-center bg-[#F4F4F4]">
       {firstStep && <Stepone handleNextButtonHandler={stepAdd} />}
       {secondStep && (
         <Steptwo handleButtonContinue={stepAdd} stepBack={stepBack} />
       )}
-      {thirdStep && <Stepthree stepAdd={stepAdd} stepBack={stepBack} />}
+      {thirdStep && (
+        <Stepthree handleButtonSection3={stepAdd} stepBack={stepBack} />
+      )}
       {fourthStep && <Stepfour />}
     </div>
   );
