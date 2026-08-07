@@ -12,13 +12,17 @@ import { Stepthree } from "./features/Stepthree";
 import { Stepfour } from "./features/Stepfour";
 
 const getPageNumber = () => {
-  if (typeof window !== "undefined") {
-    if (JSON.parse(localStorage.getItem("page", "step")) === 4) {
-      return 1;
-    } else {
-      return JSON.parse(localStorage.getItem("page", "step"));
-    }
-  } else {
+  if (typeof window === "undefined") {
+    return 1;
+  }
+
+  try {
+    const rawPage = localStorage.getItem("page");
+    const page = rawPage ? JSON.parse(rawPage) : 1;
+
+    return page === 4 ? 1 : page;
+  } catch (error) {
+    console.error("Error reading page from localStorage:", error);
     return 1;
   }
 };
