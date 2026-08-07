@@ -12,10 +12,50 @@ import { jsx } from "react/jsx-runtime";
 const ALREADY_TAKEN_USERNAME = ["bat", "bold", "test", "pinecone"];
 
 const getFirstName = () => {
-  if (typeof window === "undefined") {
-    return null;
-  } else {
-    const getFirst = JSON.parse(localStorage.getItem("FirstName"));
+  if (typeof window === "undefined") return "";
+  try {
+    const first = localStorage.getItem("FirstName");
+    if (!first) return "";
+    try {
+      return JSON.parse(first);
+    } catch {
+      return first;
+    }
+  } catch (error) {
+    console.error("Error reading FirstName from localStorage:", error);
+    return "";
+  }
+};
+
+const getLastName = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    const last = localStorage.getItem("LastName");
+    if (!last) return "";
+    try {
+      return JSON.parse(last);
+    } catch {
+      return last;
+    }
+  } catch (error) {
+    console.error("Error reading LastName from localStorage:", error);
+    return "";
+  }
+};
+
+const getUserName = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    const user = localStorage.getItem("UserName");
+    if (!user) return "";
+    try {
+      return JSON.parse(user);
+    } catch {
+      return user;
+    }
+  } catch (error) {
+    console.error("Error reading UserName from localStorage:", error);
+    return "";
   }
 };
 
@@ -23,22 +63,27 @@ export const Stepone = (props) => {
   const letters = "qwertyuiopasdfghjklzxcvbnm";
   const [firstName, setFirstName] = useState(getFirstName());
   const [firstNameError, setFirstNameError] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [lastName, setLastName] = useState(getLastName());
   const [lastNameError, setLastNameError] = useState("");
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState(getUserName());
   const [userNameError, setUserNameError] = useState("");
 
   const eventTakerFirstName = (e) => {
-    setFirstName(e.target.value);
-    JSON.stringify(localStorage.setItem("FristName", firstName));
+    const newFirst = e.target.value;
+    setFirstName(newFirst);
+    localStorage.setItem("FirstName", newFirst);
   };
+
   const eventTakerLastName = (e) => {
-    setLastName(e.target.value);
-    JSON.stringify(localStorage.setItem("LastName", lastName));
+    const newLast = e.target.value;
+    setLastName(newLast);
+    localStorage.setItem("LastName", newLast);
   };
+
   const eventTakerUserName = (e) => {
-    setUserName(e.target.value);
-    JSON.stringify(localStorage.setItem("Username", userName));
+    const newUser = e.target.value;
+    setUserName(newUser);
+    localStorage.setItem("UserName", newUser);
   };
 
   const checkEachCharacter = (value) => {
@@ -95,10 +140,6 @@ export const Stepone = (props) => {
     if (firstError === "" && secondError === "" && thirdError === "") {
       props.handleNextButtonHandler();
     }
-  };
-
-  const saveToLocalFirstName = () => {
-    return;
   };
 
   return (

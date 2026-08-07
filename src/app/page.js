@@ -26,6 +26,7 @@ const getPageNumber = () => {
     return 1;
   }
 };
+
 export default function Home() {
   const [step, setStep] = useState(getPageNumber());
   const [date, setDate] = useState("text");

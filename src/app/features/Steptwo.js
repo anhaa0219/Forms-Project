@@ -1,20 +1,58 @@
 "use client";
-import Image from "next/image";
+
 import { Pineconelogo } from "../icons/Pineconelogo";
 import { Arrow } from "../icons/Arrow";
 import { Arrowleft } from "../icons/Arrowleft";
 import { useState } from "react";
-import { Calendar } from "../icons/Calendar";
-import { Imagelogo } from "../icons/Imagelogo";
+
+const getEmail = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem("Email") || "";
+  } catch (error) {
+    console.error("Error reading Email from localStorage:", error);
+    return "";
+  }
+};
+
+const getPhone = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem("Phone") || "";
+  } catch (error) {
+    console.error("Error reading Phone from localStorage:", error);
+    return "";
+  }
+};
+
+const getPassword = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem("Password") || "";
+  } catch (error) {
+    console.error("Error reading Password from localStorage:", error);
+    return "";
+  }
+};
+
+const getPasswordconfirm = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem("Passwordconfirm") || "";
+  } catch (error) {
+    console.error("Error reading Passwordconfirm from localStorage:", error);
+    return "";
+  }
+};
 
 export const Steptwo = (props) => {
   const letters = "qwertyuiopasdfghjklzxcvbnm";
   const numbers = "1234567890";
 
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordconfirm, setPasswordconfirm] = useState("");
+  const [email, setEmail] = useState(getEmail());
+  const [phone, setPhone] = useState(getPhone());
+  const [password, setPassword] = useState(getPassword());
+  const [passwordconfirm, setPasswordconfirm] = useState(getPasswordconfirm());
 
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPhone, setErrorPhone] = useState("");
@@ -22,28 +60,36 @@ export const Steptwo = (props) => {
   const [errorPasswordconfirm, setErrorPasswordconfirm] = useState("");
 
   const eventTakerEmail = (e) => {
-    setEmail(e.target.value);
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    localStorage.setItem("Email", newEmail);
     if (errorEmail) setErrorEmail("");
   };
+
   const eventTakerPhone = (e) => {
-    setPhone(e.target.value);
+    const newPhone = e.target.value;
+    setPhone(newPhone);
+    localStorage.setItem("Phone", newPhone);
     if (errorPhone) setErrorPhone("");
   };
+
   const eventTakerPassword = (e) => {
-    setPassword(e.target.value);
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    localStorage.setItem("Password", newPassword);
     if (errorPassword) setErrorPassword("");
   };
+
   const eventTakerPasswordconfirm = (e) => {
-    setPasswordconfirm(e.target.value);
+    const newPasswordconfirm = e.target.value;
+    setPasswordconfirm(newPasswordconfirm);
+    localStorage.setItem("Passwordconfirm", newPasswordconfirm);
     if (errorPasswordconfirm) setErrorPasswordconfirm("");
   };
 
   const validateEmail = (value) => {
     const trimmed = value.trim();
-    if (trimmed === "") {
-      return "Please provide a valid email address.";
-    }
-    if (!trimmed.includes("@")) {
+    if (trimmed === "" || !trimmed.includes("@")) {
       return "Please provide a valid email address.";
     }
     return "";
@@ -51,9 +97,7 @@ export const Steptwo = (props) => {
 
   const checkPhone = (value) => {
     for (let i = 0; i < value.length; i++) {
-      if (!numbers.includes(value[i])) {
-        return false;
-      }
+      if (!numbers.includes(value[i])) return false;
     }
     return true;
   };
@@ -124,7 +168,7 @@ export const Steptwo = (props) => {
       <div className="w-104 flex flex-col gap-7">
         <div className="w-104 flex flex-col gap-2">
           <Pineconelogo />
-          <p className="h-7.75 font-inter not-italic text-[26px] font-semibold text-[#202124] text-shadow-[0px_4px_4px_#00000040]">
+          <p className="h-7.75 font-inter not-italic text-[26px] font-semibold text-[#202124]">
             Join Us! 😎
           </p>
           <p className="h-5.5 font-inter not-italic font-normal text-[18px] text-[#8E8E8E]">
@@ -135,16 +179,14 @@ export const Steptwo = (props) => {
         <div className="w-104 flex flex-col gap-3">
           <div className="w-104 flex flex-col gap-1">
             <p className="font-inter font-semibold text-[#334155] text-[14px]">
-              Email{" "}
-              <span className="font-inter font-semibold text-red-700 text-[14px]">
-                *
-              </span>
+              Email <span className="text-red-700">*</span>
             </p>
             <input
               type="email"
               value={email}
               onChange={eventTakerEmail}
-              placeholder="Placeholder"
+              suppressHydrationWarning={true}
+              placeholder="Email"
               className={`w-104 h-11 shrink-0 rounded-lg flex py-1 px-3 border-solid border font-inter font-normal text-[16px] ${
                 errorEmail ? "border-red-500" : "border-[#CBD5E1]"
               } outline-none`}
@@ -153,18 +195,17 @@ export const Steptwo = (props) => {
               <p className="text-red-500 text-xs mt-1">{errorEmail}</p>
             )}
           </div>
+
           <div className="w-104 flex flex-col gap-1">
             <p className="font-inter font-semibold text-[#334155] text-[14px]">
-              Phone number{" "}
-              <span className="font-inter font-semibold text-red-700 text-[14px]">
-                *
-              </span>
+              Phone number <span className="text-red-700">*</span>
             </p>
             <input
               type="text"
               value={phone}
               onChange={eventTakerPhone}
-              placeholder="Placeholder"
+              suppressHydrationWarning={true}
+              placeholder="Phone number"
               className={`w-104 h-11 shrink-0 rounded-lg flex py-1 px-3 border-solid border font-inter font-normal text-[16px] ${
                 errorPhone ? "border-red-500" : "border-[#CBD5E1]"
               } outline-none`}
@@ -173,18 +214,17 @@ export const Steptwo = (props) => {
               <p className="text-red-500 text-xs mt-1">{errorPhone}</p>
             )}
           </div>
+
           <div className="w-104 flex flex-col gap-1">
             <p className="font-inter font-semibold text-[#334155] text-[14px]">
-              Password{" "}
-              <span className="font-inter font-semibold text-red-700 text-[14px]">
-                *
-              </span>
+              Password <span className="text-red-700">*</span>
             </p>
             <input
               type="password"
               value={password}
               onChange={eventTakerPassword}
-              placeholder="Placeholder"
+              suppressHydrationWarning={true}
+              placeholder="Password"
               className={`w-104 h-11 shrink-0 rounded-lg flex py-1 px-3 border-solid border font-inter font-normal text-[16px] ${
                 errorPassword ? "border-red-500" : "border-[#CBD5E1]"
               } outline-none`}
@@ -193,18 +233,17 @@ export const Steptwo = (props) => {
               <p className="text-red-500 text-xs mt-1">{errorPassword}</p>
             )}
           </div>
+
           <div className="w-104 flex flex-col gap-1">
             <p className="font-inter font-semibold text-[#334155] text-[14px]">
-              Confirm password{" "}
-              <span className="font-inter font-semibold text-red-700 text-[14px]">
-                *
-              </span>
+              Confirm password <span className="text-red-700">*</span>
             </p>
             <input
               type="password"
               value={passwordconfirm}
               onChange={eventTakerPasswordconfirm}
-              placeholder="Placeholder"
+              suppressHydrationWarning={true}
+              placeholder="Confirm password"
               className={`w-104 h-11 shrink-0 rounded-lg flex py-1 px-3 border-solid border font-inter font-normal text-[16px] ${
                 errorPasswordconfirm ? "border-red-500" : "border-[#CBD5E1]"
               } outline-none`}
@@ -217,6 +256,7 @@ export const Steptwo = (props) => {
           </div>
         </div>
       </div>
+
       <div className="w-104 h-11 flex gap-2">
         <button
           type="button"

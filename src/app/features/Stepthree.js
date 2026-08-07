@@ -6,15 +6,26 @@ import { Arrowleft } from "../icons/Arrowleft";
 import { useState } from "react";
 import { Calendar } from "../icons/Calendar";
 import { Imagelogo } from "../icons/Imagelogo";
-
+const getDate = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem("Date") || "";
+  } catch (error) {
+    console.error("Error reading Date from localStorage:", error);
+    return "";
+  }
+};
 export const Stepthree = (props) => {
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(getDate());
   const [errorDate, setErrorDate] = useState("");
   const [picture, setPicture] = useState(null);
   const [errorPicture, setErrorPicture] = useState("");
 
   const eventTakerDate = (e) => {
-    setDate(e.target.value);
+    const newDate = e.target.value;
+    setDate(newDate);
+    localStorage.setItem("Date", newDate);
+
     if (errorDate) setErrorDate("");
   };
 
