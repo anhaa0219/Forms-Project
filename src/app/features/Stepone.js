@@ -7,12 +7,21 @@ import { Arrowleft } from "../icons/Arrowleft";
 import { useState } from "react";
 import { Calendar } from "../icons/Calendar";
 import { Imagelogo } from "../icons/Imagelogo";
+import { jsx } from "react/jsx-runtime";
 
 const ALREADY_TAKEN_USERNAME = ["bat", "bold", "test", "pinecone"];
 
+const getFirstName = () => {
+  if (typeof window === "undefined") {
+    return null;
+  } else {
+    const getFirst = JSON.parse(localStorage.getItem("FirstName"));
+  }
+};
+
 export const Stepone = (props) => {
   const letters = "qwertyuiopasdfghjklzxcvbnm";
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState(getFirstName());
   const [firstNameError, setFirstNameError] = useState("");
   const [lastName, setLastName] = useState("");
   const [lastNameError, setLastNameError] = useState("");
@@ -21,12 +30,15 @@ export const Stepone = (props) => {
 
   const eventTakerFirstName = (e) => {
     setFirstName(e.target.value);
+    JSON.stringify(localStorage.setItem("FristName", firstName));
   };
   const eventTakerLastName = (e) => {
     setLastName(e.target.value);
+    JSON.stringify(localStorage.setItem("LastName", lastName));
   };
   const eventTakerUserName = (e) => {
     setUserName(e.target.value);
+    JSON.stringify(localStorage.setItem("Username", userName));
   };
 
   const checkEachCharacter = (value) => {
@@ -83,6 +95,10 @@ export const Stepone = (props) => {
     if (firstError === "" && secondError === "" && thirdError === "") {
       props.handleNextButtonHandler();
     }
+  };
+
+  const saveToLocalFirstName = () => {
+    return;
   };
 
   return (
