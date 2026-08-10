@@ -1,9 +1,11 @@
 "use client";
+
 import Image from "next/image";
 import { useState } from "react";
 import { Step23Button } from "../components/Step23Button";
 import { Imagelogo } from "../icons/Imagelogo";
 import { Pineconelogo } from "../icons/Pineconelogo";
+
 const getDate = () => {
   if (typeof window === "undefined") return "";
   try {
@@ -13,26 +15,52 @@ const getDate = () => {
     return "";
   }
 };
+
+const getInitialPicture = () => {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem("Base64") || null;
+  } catch (error) {
+    console.error("Error reading Base64 from localStorage:", error);
+    return null;
+  }
+};
+
 export const Stepthree = (props) => {
-  const [date, setDate] = useState(getDate());
+  const [date, setDate] = useState(getDate);
   const [errorDate, setErrorDate] = useState("");
-  const [picture, setPicture] = useState(null);
+  const [picture, setPicture] = useState(getInitialPicture);
   const [errorPicture, setErrorPicture] = useState("");
 
   const eventTakerDate = (e) => {
     const newDate = e.target.value;
     setDate(newDate);
     localStorage.setItem("Date", newDate);
-
     if (errorDate) setErrorDate("");
   };
 
   const eventTakerPicture = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPicture(URL.createObjectURL(file));
-      if (errorPicture) setErrorPicture("");
-    }
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (errorPicture) setErrorPicture("");
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result;
+      setPicture(base64String);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("Base64", base64String);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePicture = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setPicture(null);
+    localStorage.removeItem("Base64");
   };
 
   const validateDate = (value) => {
@@ -47,8 +75,8 @@ export const Stepthree = (props) => {
     return "";
   };
 
-  const validatePicture = (file) => {
-    if (!file) {
+  const validatePicture = (img) => {
+    if (!img) {
       return "Image cannot be blank";
     }
     return "";
@@ -120,13 +148,22 @@ export const Stepthree = (props) => {
                 className="hidden"
               />
               {picture ? (
-                <Image
-                  src={picture}
-                  alt="Profile preview"
-                  fill
-                  unoptimized
-                  className="object-cover rounded-md"
-                />
+                <>
+                  <Image
+                    src={picture}
+                    alt="Profile preview"
+                    fill
+                    unoptimized
+                    className="object-cover rounded-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemovePicture}
+                    className="w-6 h-6 flex justify-center items-center bg-[#202124] text-white text-xs rounded-full absolute top-2 right-2 border-none z-10 cursor-pointer"
+                  >
+                    x
+                  </button>
+                </>
               ) : (
                 <div className="flex flex-col items-center justify-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-white flex justify-center items-center shadow-sm">
