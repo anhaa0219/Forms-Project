@@ -1,11 +1,5 @@
 "use client";
-import Image from "next/image";
 import { Pineconelogo } from "../icons/Pineconelogo";
-import { Arrow } from "../icons/Arrow";
-import { Arrowleft } from "../icons/Arrowleft";
-import { useState } from "react";
-import { Calendar } from "../icons/Calendar";
-import { Imagelogo } from "../icons/Imagelogo";
 
 export const Stepfour = (props) => {
   return (

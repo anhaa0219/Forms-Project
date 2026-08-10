@@ -1,89 +1,49 @@
 "use client";
 
-import Image from "next/image";
-import { Pineconelogo } from "../icons/Pineconelogo";
-import { Arrow } from "../icons/Arrow";
-import { Arrowleft } from "../icons/Arrowleft";
 import { useState } from "react";
-import { Calendar } from "../icons/Calendar";
-import { Imagelogo } from "../icons/Imagelogo";
-import { jsx } from "react/jsx-runtime";
+import { FormInput } from "../components/FormInput";
+import { Arrow } from "../icons/Arrow";
+import { Pineconelogo } from "../icons/Pineconelogo";
 
 const ALREADY_TAKEN_USERNAME = ["bat", "bold", "test", "pinecone"];
 
-const getFirstName = () => {
-  if (typeof window === "undefined") return "";
-  try {
-    const first = localStorage.getItem("FirstName");
-    if (!first) return "";
-    try {
-      return JSON.parse(first);
-    } catch {
-      return first;
-    }
-  } catch (error) {
-    console.error("Error reading FirstName from localStorage:", error);
-    return "";
+const getInitialValues = () => {
+  if (typeof window === "undefined") {
+    return { firstName: "", lastName: "", userName: "" };
   }
+  const values = localStorage.getItem("stepOneValues");
+  if (values) {
+    try {
+      return JSON.parse(values);
+    } catch (error) {
+      console.error("Error reading stepOneValues from localStorage:", error);
+    }
+  }
+  return {
+    firstName: "",
+    lastName: "",
+    userName: "",
+  };
 };
 
-const getLastName = () => {
-  if (typeof window === "undefined") return "";
-  try {
-    const last = localStorage.getItem("LastName");
-    if (!last) return "";
-    try {
-      return JSON.parse(last);
-    } catch {
-      return last;
-    }
-  } catch (error) {
-    console.error("Error reading LastName from localStorage:", error);
-    return "";
-  }
-};
-
-const getUserName = () => {
-  if (typeof window === "undefined") return "";
-  try {
-    const user = localStorage.getItem("UserName");
-    if (!user) return "";
-    try {
-      return JSON.parse(user);
-    } catch {
-      return user;
-    }
-  } catch (error) {
-    console.error("Error reading UserName from localStorage:", error);
-    return "";
-  }
+const initialErrorValues = {
+  firstNameError: "",
+  lastNameError: "",
+  userNameError: "",
 };
 
 export const Stepone = (props) => {
   const letters = "qwertyuiopasdfghjklzxcvbnm";
-  const [firstName, setFirstName] = useState(getFirstName());
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastName, setLastName] = useState(getLastName());
-  const [lastNameError, setLastNameError] = useState("");
-  const [userName, setUserName] = useState(getUserName());
-  const [userNameError, setUserNameError] = useState("");
+  const [stepOneValues, setStepOneValues] = useState(getInitialValues);
+  const [stepOneErrors, setStepOneErrors] = useState(initialErrorValues);
 
-  const eventTakerFirstName = (e) => {
-    const newFirst = e.target.value;
-    setFirstName(newFirst);
-    localStorage.setItem("FirstName", newFirst);
-  };
+  const handleInputChange = (e) => {
+    const key = e.target.name;
+    const value = e.target.value;
+    const updatedValues = { ...stepOneValues, [key]: value };
 
-  const eventTakerLastName = (e) => {
-    const newLast = e.target.value;
-    setLastName(newLast);
-    localStorage.setItem("LastName", newLast);
-  };
-
-  const eventTakerUserName = (e) => {
-    const newUser = e.target.value;
-    setUserName(newUser);
-    localStorage.setItem("UserName", newUser);
+    setStepOneValues(updatedValues);
+    localStorage.setItem("stepOneValues", JSON.stringify(updatedValues));
   };
 
   const checkEachCharacter = (value) => {
@@ -95,49 +55,39 @@ export const Stepone = (props) => {
     return true;
   };
 
-  const validateFirstName = (name) => {
+  const validateName = (label, name = "") => {
     const allToLower = name.trim().toLowerCase();
     if (!allToLower) {
-      return "First name is required";
+      return `${label} is required`;
     }
     if (!checkEachCharacter(allToLower)) {
-      return "First name cannot contain special characters or numbers.";
+      return `${label} cannot contain special characters or numbers.`;
     }
     return "";
   };
 
-  const validateLastName = (name) => {
-    const allToLower = name.trim().toLowerCase();
-    if (!allToLower) {
-      return "Last name is required";
-    }
-    if (!checkEachCharacter(allToLower)) {
-      return "Last name cannot contain special characters or numbers.";
-    }
-    return "";
-  };
-
-  const validateUserName = (value) => {
+  const validateUserName = (label, value = "") => {
     const allToLower = value.trim().toLowerCase();
     if (!allToLower) {
-      return "Username is required";
+      return `${label} is required`;
     }
     if (ALREADY_TAKEN_USERNAME.includes(allToLower)) {
-      return "This username is already taken. Please choose another one.";
+      return `This ${label} is already taken. Please choose another one.`;
     }
     return "";
   };
 
   const handleNextButtonHandler = () => {
-    const firstError = validateFirstName(firstName);
-    const secondError = validateLastName(lastName);
-    const thirdError = validateUserName(userName);
+    const errors = {
+      firstNameError: validateName("First Name", stepOneValues.firstName),
+      lastNameError: validateName("Last Name", stepOneValues.lastName),
+      userNameError: validateUserName("Username", stepOneValues.userName),
+    };
+    setStepOneErrors(errors);
 
-    setFirstNameError(firstError);
-    setLastNameError(secondError);
-    setUserNameError(thirdError);
+    const hasNoErrors = Object.values(errors).every((error) => error === "");
 
-    if (firstError === "" && secondError === "" && thirdError === "") {
+    if (hasNoErrors) {
       props.handleNextButtonHandler();
     }
   };
@@ -156,65 +106,30 @@ export const Stepone = (props) => {
         </div>
 
         <div className="w-104 flex flex-col gap-3">
-          <div className="w-104 gap-1 flex flex-col">
-            <p className="font-inter font-semibold text-[#334155] text-[14px]">
-              First name{" "}
-              <span className="font-inter font-semibold text-red-700 text-[14px]">
-                *
-              </span>
-            </p>
-            <input
-              value={firstName}
-              onChange={eventTakerFirstName}
-              placeholder="First name"
-              className={`w-104 h-11 rounded-lg flex py-1 px-3 border-solid border ${
-                firstNameError ? "border-red-500" : "border-[#CBD5E1]"
-              } outline-none`}
-            />
-            {firstNameError && (
-              <p className="text-red-500 text-xs mt-1">{firstNameError}</p>
-            )}
-          </div>
-
-          <div className="w-104 gap-1 flex flex-col">
-            <p className="font-inter font-semibold text-[#334155] text-[14px]">
-              Last name{" "}
-              <span className="font-inter font-semibold text-red-700 text-[14px]">
-                *
-              </span>
-            </p>
-            <input
-              value={lastName}
-              onChange={eventTakerLastName}
-              placeholder="Last name"
-              className={`w-104 h-11 rounded-lg flex py-1 px-3 border-solid border ${
-                lastNameError ? "border-red-500" : "border-[#CBD5E1]"
-              } outline-none`}
-            />
-            {lastNameError && (
-              <p className="text-red-500 text-xs mt-1">{lastNameError}</p>
-            )}
-          </div>
-
-          <div className="w-104 gap-1 flex flex-col">
-            <p className="font-inter font-semibold text-[#334155] text-[14px]">
-              Username{" "}
-              <span className="font-inter font-semibold text-red-700 text-[14px]">
-                *
-              </span>
-            </p>
-            <input
-              value={userName}
-              onChange={eventTakerUserName}
-              placeholder="Username"
-              className={`w-104 h-11 rounded-lg flex py-1 px-3 border-solid border ${
-                userNameError ? "border-red-500" : "border-[#CBD5E1]"
-              } outline-none`}
-            />
-            {userNameError && (
-              <p className="text-red-500 text-xs mt-1">{userNameError}</p>
-            )}
-          </div>
+          <FormInput
+            type="text"
+            label="First Name"
+            value={stepOneValues.firstName}
+            onChange={handleInputChange}
+            name="firstName"
+            error={stepOneErrors.firstNameError}
+          />
+          <FormInput
+            type="text"
+            label="Last Name"
+            value={stepOneValues.lastName}
+            onChange={handleInputChange}
+            name="lastName"
+            error={stepOneErrors.lastNameError}
+          />
+          <FormInput
+            type="text"
+            label="Username"
+            value={stepOneValues.userName}
+            onChange={handleInputChange}
+            name="userName"
+            error={stepOneErrors.userNameError}
+          />
         </div>
       </div>
 
@@ -226,7 +141,9 @@ export const Stepone = (props) => {
           Continue
         </p>
         <div className="flex">
-          <p className="font-inter font-normal text-[16px] text-[#FFFFFF]">1</p>
+          <p className="font-inter font-normal text-[16px] text-[#FFFFFF]">
+            {props.id}
+          </p>
           <p className="font-inter font-normal text-[16px] text-[#FFFFFF]">
             /3
           </p>
